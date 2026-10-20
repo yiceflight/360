@@ -1,0 +1,27 @@
+name: test-windows
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  test:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: stable
+          components: rustfmt
+      - name: Check formatting
+        run: cargo fmt --all -- --check
+      - name: Run unit tests
+        run: cargo test --locked --all-targets
+      - name: Check Windows target
+        run: cargo check --locked --all-targets --release
+      - name: Build portable executable
+        run: cargo build --locked --release
